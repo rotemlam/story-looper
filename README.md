@@ -102,7 +102,7 @@ Just make sure the filename matches the Redirect URI you set in Step 1.
 
 ## Sharing with others
 
-By default, Spotify apps are in **Development Mode** — only users you explicitly add in the dashboard can log in (up to 25 people).
+By default, Spotify apps are in **Development Mode** — only users you explicitly add in the dashboard can log in (up to 5 people).
 
 To allow anyone to use your app:
 1. Go to your app in the Spotify dashboard
