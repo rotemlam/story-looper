@@ -3,9 +3,25 @@
 <head>
 <meta charset="UTF-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, interactive-widget=resizes-content" />
 <title>Story Looper</title>
 <style>
+
+  /* ── Anti desktop-site: hard-clamp everything to viewport width ──
+     Prevents Android Chrome from inferring desktop mode on OAuth redirect */
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   :root {
     --navy:       #0d1b2a;
     --navy2:      #122236;
@@ -1706,7 +1722,7 @@
   .fav-compact {
     flex: 1;
     position: relative;
-    height: 52px;
+    aspect-ratio: 1;
     border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
@@ -1963,7 +1979,7 @@
 
     /* Favorites compact grid on mobile */
     .favorites-grid-compact { gap: 8px; }
-    .fav-compact { height: 46px; border-radius: 8px; }
+    .fav-compact { aspect-ratio: 1; border-radius: 8px; }
     .fav-compact-remove { display: none !important; }
 
     /* Section padding tightened */
@@ -2144,7 +2160,7 @@
       <!-- Mini bar: shown only when no episode selected on mobile -->
       <div id="player-mini">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(212,132,154,0.5)" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        <span style="font-size:0.82rem;color:var(--text-dim);font-style:italic">בחרו פרק להשמעה...</span>
+        
       </div>
 
       <!-- ── ROW 1: art + title/show + heart saves ── -->
@@ -2159,8 +2175,8 @@
           </div>
         </div>
         <div class="pd-meta">
-          <div id="ep-name" class="pd-ep-name">בחרו פרק להשמעה</div>
-          <div id="ep-show" class="pd-ep-show">חפשו, הדביקו קישור, או בחרו מהמועדפים</div>
+          <div id="ep-name" class="pd-ep-name"></div>
+          <div id="ep-show" class="pd-ep-show"></div>
         </div>
         <div id="fav-save-btns" class="pd-hearts"></div>
       </div>
@@ -2713,6 +2729,10 @@ function logout() {
 async function initApp() {
   document.getElementById('section-setup').style.display = 'none';
   document.getElementById('section-app').style.display = 'block';
+  // Force Chrome to re-evaluate layout at mobile width after redirect
+  document.documentElement.style.maxWidth = '100vw';
+  document.body.style.maxWidth = '100vw';
+  window.scrollTo(0, 0);
   await fetchUser();
   initPlayer();
   initFavorites();
@@ -2748,7 +2768,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initPlayer() {
   if (player) return;
   player = new Spotify.Player({ name: 'Story Looper', getOAuthToken: cb => cb(accessToken), volume: 0.7 });
-  player.addListener('ready', ({ device_id }) => { deviceId = device_id; setAppStatus('בחרו סיפור או פרק...', ''); });
+  player.addListener('ready', ({ device_id }) => { deviceId = device_id; setAppStatus('בחרו סיפור או פרק', ''); });
   player.addListener('not_ready', () => setAppStatus('הנגן התנתק', 'error'));
   player.addListener('player_state_changed', state => {
     if (!state) return;
